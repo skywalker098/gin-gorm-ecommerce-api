@@ -92,7 +92,13 @@ func (a authController) Login(c *gin.Context) {
 		utils.CustomRepsonseWriter(c, http.StatusUnauthorized, nil, "Please verify your email")
 	}
 
-	//else
+	//generate a basic auth token
+	token := utils.GenerateBasicAuthToken(user.Email)
+
+	res := map[string]any{
+		"token": token,
+	}
+
 	//validate the password of existing user
 	if user.IsActive {
 		err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginModel.Password))
@@ -101,7 +107,7 @@ func (a authController) Login(c *gin.Context) {
 			return
 		}
 
-		utils.CustomRepsonseWriter(c, http.StatusFound, user, "Login successful")
+		utils.CustomRepsonseWriter(c, http.StatusFound, res, "Login successful")
 	}
 }
 
